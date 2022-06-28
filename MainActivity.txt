@@ -1,0 +1,104 @@
+package com.example.weatherapiapp;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatEditText;
+
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+//import com.android.volley.RequestQueue;
+
+public class MainActivity extends AppCompatActivity {
+
+    private Button btn_getCityID, btn_getWeatherByCityID, btn_getWeatherByCityName;
+    private AppCompatEditText et_dataInput;
+    private ListView iv_weatherReports;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        //assign values to each control
+        btn_getCityID = findViewById(R.id.btn_getCityID);
+        btn_getWeatherByCityID = findViewById(R.id.btn_getWeatherByCityID);
+        btn_getWeatherByCityName = findViewById(R.id.btn_getWeatherByCityName);
+        et_dataInput = findViewById(R.id.et_dataInput);
+        iv_weatherReports = findViewById(R.id.iv_weatherReports);
+
+        //click listener for each button
+        btn_getCityID.setOnClickListener( e->{
+
+            //instantiate the request queue
+            RequestQueue queue =  Volley.newRequestQueue(MainActivity.this);
+            String cityName = et_dataInput.getText().toString();
+            String url = "https://api.openweathermap.org/data/2.5/weather?q="+cityName+"&appid=d283fc806b5f0f3e72a7a42ad8840768";
+
+//            //set a string response from the provided url
+//            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+//                    new Response.Listener<String>() {
+//                        @Override
+//                        public void onResponse(String response) {
+//                            //display
+//                            Toast.makeText(MainActivity.this, "" + response, Toast.LENGTH_SHORT).show();
+//                        }
+//                    }, new Response.ErrorListener() {
+//                @Override
+//                public void onErrorResponse(VolleyError error) {
+//                    Toast.makeText(MainActivity.this, "CALLBACK ERROR: "+error.getMessage(), Toast.LENGTH_SHORT).show();
+//                }
+//            });
+
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        String temp = response.getJSONObject("main").getString("temp").toString();
+                        Toast.makeText(MainActivity.this, "Temp: "+temp, Toast.LENGTH_LONG).show();
+                    } catch (JSONException jsonException) {
+                        jsonException.printStackTrace();
+                        Toast.makeText(MainActivity.this, "Error:"+jsonException.toString(), Toast.LENGTH_SHORT).show();
+                    }
+
+                    //Toast.makeText(MainActivity.this, ""+response.toString(), Toast.LENGTH_LONG).show();
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(MainActivity.this, "ERROR: -> " + error.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
+
+            //ADD the request to request que
+            queue.add(request);
+
+        });
+
+        btn_getWeatherByCityID.setOnClickListener( e->{
+
+        });
+
+        btn_getWeatherByCityName.setOnClickListener( e->{
+
+        });
+
+
+
+
+    }
+}
